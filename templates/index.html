@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Python com Jquery</title>
+</head>
+
+<body>
+  <form id="name_form">
+    <label>Nome:</label>
+    <input type="text" name="first" />
+    <br />
+    <br />
+    <label>Time:</label>
+    <input type="text" name="last" />
+    <br />
+    <br />
+    <label>Esporte: </label>
+    <select id="myCombo">
+      <option disabled selected>Escolha um esporte:</option>
+      <option value="opcao1">futebol</option>
+      <option value="opcao2">voley</option>
+      <option value="opcao3">basquete</option>
+    </select>
+    <br>
+    <br>
+    <input type="submit" value="submit" />
+  </form>
+  <hr>
+  <span id="resp"></span>
+
+  <script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
+  <script type="text/javascript">
+    $("#name_form").submit(function (e) {
+      e.preventDefault();
+
+      if ($("[name=first]").val() === '') {
+        $("#resp").html("O nome está vazio favor preencher");
+      } else if ($("[name=last]").val() === '') {
+        $("#resp").html("O time está vazio favor preencher");
+      } else if ($("#myCombo option:selected").text() === 'Escolha um esporte:') {
+        $("#resp").html("O esporte está vazio favor preencher");
+      } else {
+        var formobj = {
+          first: $("[name=first]").val(),
+          last: $("[name=last]").val(),
+          combo: $("#myCombo option:selected").text(),
+        };
+
+        $.ajax({
+          type: "POST",
+          url: "/api/upper",
+          dataType: "json",
+          contentType: "application/json; charset=utf-8",
+          data: JSON.stringify(formobj),
+          success: function (callback) {
+            console.log(callback)
+            $("#resp").html("respondeu: " + callback.first_name + "-" + callback.last_name + "-" + callback.value);
+            $("#name_form")[0].reset();
+          },
+          error: function () {
+            $(this).html("error!");
+          },
+        });
+      }
+
+    });
+  </script>
+</body>
+
+</html>
